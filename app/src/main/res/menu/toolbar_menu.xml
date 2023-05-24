@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/filter_action"
+        android:icon="@drawable/ic_baseline_filter_list_24"
+        android:title="Filters"
+        app:showAsAction="never"></item>
+    <item
+        android:id="@+id/hide_outdated"
+        android:icon="@drawable/ic_add_24"
+        android:iconTint="#F40000"
+        android:title="@string/hide_outdated"></item>
+    <item
+        android:id="@+id/show_outdated"
+        android:icon="@drawable/ic_add_24"
+        android:iconTint="#F40000"
+        android:title="@string/show_outdated"
+        android:visible="false"></item>
+</menu>

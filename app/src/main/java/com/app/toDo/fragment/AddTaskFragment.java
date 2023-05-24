@@ -48,8 +48,11 @@ import java.time.ZoneOffset;
 public class AddTaskFragment extends Fragment {
 
     private final ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
+
     int selectedCategoryIndex = -1;
+
     private CategoryService categoryService;
+
     private TaskService taskService;
     private Uri imageUri;
 

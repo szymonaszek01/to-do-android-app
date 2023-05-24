@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AppViewModel extends ViewModel {
 
@@ -21,6 +22,8 @@ public class AppViewModel extends ViewModel {
     private final MutableLiveData<List<Task>> taskList = new MutableLiveData<>(new ArrayList<>());
 
     private final MutableLiveData<List<Category>> categoryList = new MutableLiveData<>(new ArrayList<>());
+
+    private MutableLiveData<String> filteringCategory = new MutableLiveData<>("");
 
     public LiveData<Task> getSelectedTask() {
         return this.selectedTask;
@@ -44,6 +47,14 @@ public class AppViewModel extends ViewModel {
 
     public void setCategoryList(List<Category> categoryList) {
         this.categoryList.setValue(categoryList);
+    }
+
+    public LiveData<String> getFilteringCategory() {
+        return filteringCategory;
+    }
+
+    public void setFilteringCategory(String filteringCategory) {
+        this.filteringCategory.setValue(filteringCategory);
     }
 
     public Category getDefaultCategory() {

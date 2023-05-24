@@ -2,12 +2,14 @@ package com.app.toDo.service;
 
 import com.app.toDo.dao.CategoryDao;
 import com.app.toDo.entity.Category;
+import com.app.toDo.entity.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,5 +60,13 @@ public class CategoryService {
 
     public void deleteCategory(Category category) {
         executorService.execute(() -> categoryDao.deleteCategory(category));
+    }
+
+    public List<Task> filterTaskListByCategoryName(List<Task> taskList, String filter) {
+        if (!"".equals(filter)) {
+            taskList = taskList.stream().filter(task -> getCategoryNameById(task.getCategoryId()).equals(filter)).collect(Collectors.toList());
+        }
+
+        return taskList;
     }
 }
