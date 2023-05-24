@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">toDoApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="add">Add</string>
+    <string name="name_field">Task name</string>
+    <string name="desc_field">Add description</string>
+    <string name="add_task">Add Task</string>
+    <string name="add_category">Add category</string>
+    <string name="select_category">Select category</string>
+    <string name="your_categories">Your categories</string>
+    <string name="type_new_cat">Type new category name</string>
+    <string name="edit">Edit</string>
+    <string name="category">Category</string>
+    <string name="task_name">Task name</string>
+    <string name="select_date">Select task deadline</string>
+    <string name="datetime">Datetime</string>
+    <string name="update_task">Update</string>
+    <string name="add_attachment">Attach</string>
+    <string name="attachment">Attachment:</string>
+    <string name="add_notify_1h_before">Add notify 1h before</string>
+    <string name="created_at">Created at:</string>
+    <string name="hide_outdated">Hide outdated</string>
+    <string name="show_outdated">Show outdated</string>
 </resources>
