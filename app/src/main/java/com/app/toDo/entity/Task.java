@@ -34,14 +34,14 @@ public class Task {
     private long execDateTimeEpoch;
 
     @ColumnInfo(name = "category_id")
-    private long category;
+    private long categoryId;
 
     @ColumnInfo(name = "notification_id")
     private long notificationId;
 
     @ColumnInfo(name = "is_done")
-    private boolean isDone = false;
+    private boolean isDone;
 
     @ColumnInfo(name = "is_notification_on")
-    private boolean isNotificationOn = true;
+    private boolean isNotificationOn;
 }

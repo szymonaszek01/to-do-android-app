@@ -39,6 +39,15 @@ public class CategoryService {
         }
     }
 
+    public String getCategoryNameById(long id) {
+        return getCategoryList()
+                .stream()
+                .filter(category -> category.getId() == id)
+                .findFirst()
+                .map(Category::getName)
+                .orElse("");
+    }
+
     public void addCategory(Category category) {
         executorService.execute(() -> categoryDao.insertCategory(category));
     }

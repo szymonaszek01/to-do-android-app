@@ -1,5 +1,6 @@
 package com.app.toDo.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -21,4 +22,10 @@ public class Category {
     private long id;
 
     private String name;
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
+    }
 }

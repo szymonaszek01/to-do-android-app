@@ -5,6 +5,7 @@ import com.app.toDo.entity.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +38,13 @@ public class TaskService {
         } catch (InterruptedException e) {
             return new ArrayList<>();
         }
+    }
+
+    public Optional<Task> getTaskById(long taskId) {
+        return getTaskList()
+                .stream()
+                .filter(task -> task.getId() == taskId)
+                .findFirst();
     }
 
     public void addTask(Task task) {
