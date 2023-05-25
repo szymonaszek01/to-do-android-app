@@ -1,5 +1,6 @@
 package com.app.toDo.entity;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -20,7 +21,12 @@ public class Notification {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    private String name;
-
     private int counter;
+
+    private String title;
+
+    private String message;
+
+    @ColumnInfo(name = "exec_date_time_epoch")
+    private long execDateTimeEpoch;
 }

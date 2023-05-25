@@ -36,8 +36,8 @@ public class Task {
     @ColumnInfo(name = "category_id")
     private long categoryId;
 
-    @ColumnInfo(name = "notification_id")
-    private long notificationId;
+    @ColumnInfo(name = "notification_counter")
+    private long notificationCounter;
 
     @ColumnInfo(name = "is_done")
     private boolean isDone;

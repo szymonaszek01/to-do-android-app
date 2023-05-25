@@ -40,6 +40,18 @@ public class NotificationService {
         }
     }
 
+    public int countAll() {
+        return getNotificationList().size();
+    }
+
+    public Notification getNotificationByCounter(long notificationCounter) {
+        return getNotificationList()
+                .stream()
+                .filter(notification -> notification.getCounter() == notificationCounter)
+                .findAny()
+                .orElse(Notification.builder().id(0L).counter(countAll() + 1).execDateTimeEpoch(0).title("").message("").build());
+    }
+
     public void addNotification(Notification notification) {
         executorService.execute(() -> notificationDao.insertNotification(notification));
     }
