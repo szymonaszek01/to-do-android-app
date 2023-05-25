@@ -11,35 +11,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Builder
 public class FileCopyClass {
 
-    private Context context;
+    private final Context context;
 
-    public FileCopyClass(Context context) {
-        this.context = context;
-    }
-
-//    public Uri copyAttachmentToAppStorage(Uri uri) throws IOException {
-//
-//        File dst = new File(context.getFilesDir(), uri.getLastPathSegment());
-//
-//        InputStream src = context.getContentResolver().openInputStream(uri);
-//        FileOutputStream fOut = context.openFileOutput(uri.getLastPathSegment(), Context.MODE_PRIVATE);
-//        try (InputStream in = src) {
-//            try (OutputStream out = fOut) {
-//                // Transfer bytes from in to out
-//                byte[] buf = new byte[1024];
-//                int len;
-//                while ((len = in.read(buf)) > 0) {
-//                    out.write(buf, 0, len);
-//                }
-//            }
-//        }
-//
-//        return FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", dst);
-//    }
-
-    public Uri copyAttachmenToExternal(Uri attachmentUri) {
+    public Uri copyAttachmentToExternal(Uri attachmentUri) {
         String path;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
             path = context.getExternalFilesDir(Environment.DIRECTORY_DCIM).toString() + "/todo";
@@ -71,5 +52,4 @@ public class FileCopyClass {
             out.flush();
         }
     }
-
 }

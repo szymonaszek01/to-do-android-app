@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AppViewModel extends ViewModel {
 
@@ -70,7 +69,7 @@ public class AppViewModel extends ViewModel {
                 .creationDateTimeEpoch(LocalDateTime.now().toEpochSecond(zoneOffset))
                 .execDateTimeEpoch(LocalDateTime.now().toEpochSecond(zoneOffset))
                 .categoryId(0L)
-                .notificationId(0L)
+                .notificationCounter(0L)
                 .isDone(false)
                 .isNotificationOn(true)
                 .build();
