@@ -21,9 +21,12 @@ import androidx.navigation.Navigation;
 import com.app.toDo.R;
 import com.app.toDo.configuration.DatabaseConfiguration;
 import com.app.toDo.databinding.FragmentEditTaskBinding;
+import com.app.toDo.entity.Notification;
 import com.app.toDo.entity.Task;
 import com.app.toDo.model.AppViewModel;
+import com.app.toDo.notification.TaskNotificationManager;
 import com.app.toDo.service.CategoryService;
+import com.app.toDo.service.NotificationService;
 import com.app.toDo.service.TaskService;
 import com.app.toDo.util.DateConverter;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -40,13 +43,17 @@ import java.time.ZoneOffset;
 
 public class EditTaskFragment extends Fragment {
 
-    private final ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
-
-    int selectedCategoryIndex = 0;
-
     private TaskService taskService;
 
     private CategoryService categoryService;
+
+    private NotificationService notificationService;
+
+    private TaskNotificationManager taskNotificationManager;
+
+    private final ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
+
+    private int selectedCategoryIndex = 0;
 
     private Task task;
 
@@ -61,8 +68,8 @@ public class EditTaskFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         task.setTitle(binding.taskNameView.getText().toString());
         task.setDesc(binding.taskDescView.getText().toString());
-        if (binding.categorySelectView.getListSelection() != ListView.INVALID_POSITION) {
-            task.setCategoryId(binding.categorySelectView.getListSelection() + 1);
+        if (binding.categorySelectView.getListSelection() != ListView.INVALID_POSITION && selectedCategoryIndex != 0) {
+            task.setCategoryId(appViewModel.getCategoryList().getValue().get(selectedCategoryIndex).getId());
         }
         appViewModel.setSelectedTask(task);
         super.onSaveInstanceState(savedInstanceState);
@@ -74,10 +81,13 @@ public class EditTaskFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         categoryService = CategoryService.builder().categoryDao(DatabaseConfiguration.getInstance(getContext()).categoryDao()).build();
         taskService = TaskService.builder().taskDao(DatabaseConfiguration.getInstance(getContext()).taskDao()).build();
+        categoryService = CategoryService.builder().categoryDao(DatabaseConfiguration.getInstance(getContext()).categoryDao()).build();
+        notificationService = NotificationService.builder().notificationDao(DatabaseConfiguration.getInstance(getContext()).notificationDao()).build();
+        taskNotificationManager = TaskNotificationManager.builder().context(getContext()).build();
+
         binding = FragmentEditTaskBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -130,10 +140,8 @@ public class EditTaskFragment extends Fragment {
     private void updateTask() {
         task.setTitle(binding.taskNameView.getText().toString());
         task.setDesc(binding.taskDescView.getText().toString());
-        if (selectedCategoryIndex != -1) {
-            if (selectedCategoryIndex != 0) {
-                task.setCategoryId(appViewModel.getCategoryList().getValue().get(selectedCategoryIndex).getId());
-            }
+        if (selectedCategoryIndex != 0) {
+            task.setCategoryId(appViewModel.getCategoryList().getValue().get(selectedCategoryIndex).getId());
         }
         task.setUri(binding.link.getText().toString());
         task.setNotificationOn(binding.addNotifyCheckbox.isChecked());
@@ -206,6 +214,20 @@ public class EditTaskFragment extends Fragment {
                     return;
                 }
                 updateTask();
+                Notification notification = createOrUpdateNotification();
+                if (task.isNotificationOn()) {
+                    if (notification.getId() == 0L) {
+                        notificationService.addNotification(notification);
+                    } else {
+                        notificationService.editNotification(notification);
+                    }
+                    task.setNotificationCounter(notification.getCounter());
+                    taskNotificationManager.scheduleTaskNotification(notification);
+                } else {
+                    notificationService.deleteNotification(notification);
+                    task.setNotificationCounter(0L);
+                    taskNotificationManager.cancelTaskNotification(notification);
+                }
 
                 taskService.editTask(task);
                 appViewModel.setSelectedTask(appViewModel.getDefaultTask());
@@ -214,6 +236,14 @@ public class EditTaskFragment extends Fragment {
         });
     }
 
+    private Notification createOrUpdateNotification() {
+        Notification notification = notificationService.getNotificationByCounter(task.getNotificationCounter());
+        notification.setTitle(task.getTitle());
+        notification.setMessage(task.getDesc());
+        notification.setExecDateTimeEpoch(task.getExecDateTimeEpoch());
+
+        return notification;
+    }
 
     private void openImage(Uri uri) throws IOException {
         Intent openImage = new Intent(Intent.ACTION_VIEW, uri);

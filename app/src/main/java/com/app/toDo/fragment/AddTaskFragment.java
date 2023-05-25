@@ -27,9 +27,12 @@ import androidx.navigation.Navigation;
 import com.app.toDo.R;
 import com.app.toDo.configuration.DatabaseConfiguration;
 import com.app.toDo.databinding.FragmentAddTaskBinding;
+import com.app.toDo.entity.Notification;
 import com.app.toDo.entity.Task;
 import com.app.toDo.model.AppViewModel;
+import com.app.toDo.notification.TaskNotificationManager;
 import com.app.toDo.service.CategoryService;
+import com.app.toDo.service.NotificationService;
 import com.app.toDo.service.TaskService;
 import com.app.toDo.util.DateConverter;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -47,13 +50,18 @@ import java.time.ZoneOffset;
 
 public class AddTaskFragment extends Fragment {
 
-    private final ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
-
-    int selectedCategoryIndex = -1;
-
     private CategoryService categoryService;
 
     private TaskService taskService;
+
+    private NotificationService notificationService;
+
+    private TaskNotificationManager taskNotificationManager;
+
+    private final ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
+
+    private int selectedCategoryIndex = -1;
+
     private Uri imageUri;
 
     private FragmentAddTaskBinding binding;
@@ -64,15 +72,14 @@ public class AddTaskFragment extends Fragment {
 
     private Task task;
 
-    public AddTaskFragment() {
-    }
+    public AddTaskFragment() {}
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         task.setTitle(binding.taskNameView.getText().toString());
         task.setDesc(binding.taskDescView.getText().toString());
-        if (binding.categorySelectView.getListSelection() != ListView.INVALID_POSITION) {
-            task.setCategoryId(binding.categorySelectView.getListSelection() + 1);
+        if (binding.categorySelectView.getListSelection() != ListView.INVALID_POSITION && selectedCategoryIndex != -1) {
+            task.setCategoryId(binding.categorySelectView.getListSelection());
         }
         appViewModel.setSelectedTask(task);
 
@@ -89,6 +96,8 @@ public class AddTaskFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         categoryService = CategoryService.builder().categoryDao(DatabaseConfiguration.getInstance(getContext()).categoryDao()).build();
         taskService = TaskService.builder().taskDao(DatabaseConfiguration.getInstance(getContext()).taskDao()).build();
+        notificationService = NotificationService.builder().notificationDao(DatabaseConfiguration.getInstance(getContext()).notificationDao()).build();
+        taskNotificationManager = TaskNotificationManager.builder().context(getContext()).build();
 
         binding = FragmentAddTaskBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -131,12 +140,28 @@ public class AddTaskFragment extends Fragment {
                     return;
                 }
                 updateTask();
+                if (task.isNotificationOn()) {
+                    Notification notification = createNotification();
+                    notificationService.addNotification(notification);
+                    task.setNotificationCounter(notification.getCounter());
+                    taskNotificationManager.scheduleTaskNotification(notification);
+                }
 
                 taskService.addTask(task);
                 appViewModel.setSelectedTask(appViewModel.getDefaultTask());
                 Navigation.findNavController(view).navigate(R.id.action_addTaskFragment_to_tasksFragment);
             }
         });
+    }
+
+    private Notification createNotification() {
+        return Notification.builder()
+                .id(0L)
+                .counter(notificationService.countAll() + 1)
+                .title(task.getTitle())
+                .message(task.getDesc())
+                .execDateTimeEpoch(task.getExecDateTimeEpoch())
+                .build();
     }
 
     private void updateTask() {
