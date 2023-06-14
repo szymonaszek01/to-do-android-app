@@ -17,9 +17,12 @@ import com.app.toDo.adapters.RvAdapter;
 import com.app.toDo.configuration.DatabaseConfiguration;
 import com.app.toDo.databinding.FragmentTasksBinding;
 import com.app.toDo.entity.Category;
+import com.app.toDo.entity.Notification;
 import com.app.toDo.entity.Task;
 import com.app.toDo.model.AppViewModel;
+import com.app.toDo.notification.TaskNotificationManager;
 import com.app.toDo.service.CategoryService;
+import com.app.toDo.service.NotificationService;
 import com.app.toDo.service.TaskService;
 
 import java.time.LocalDateTime;
@@ -30,19 +33,29 @@ import java.util.stream.Collectors;
 
 public class TasksFragment extends Fragment {
 
-    int checkedDialogItem = -1;
+    int checkedDialogFilterItem = -1;
+
+    int checkedDialogNotificationItem = 0;
 
     private TaskService taskService;
 
     private CategoryService categoryService;
 
+    private NotificationService notificationService;
+
+    private TaskNotificationManager taskNotificationManager;
+
     private String filteringCategory;
+
+    private String notificationTime;
 
     private FragmentTasksBinding binding;
 
     private AppViewModel appViewModel;
 
     private RvAdapter adapter;
+
+    private final String[] items = {"60 minutes", "30 minutes", "15 minutes"};
 
     public TasksFragment() {
     }
@@ -56,10 +69,15 @@ public class TasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         categoryService = CategoryService.builder().categoryDao(DatabaseConfiguration.getInstance(getContext()).categoryDao()).build();
         taskService = TaskService.builder().taskDao(DatabaseConfiguration.getInstance(getContext()).taskDao()).build();
+        notificationService = NotificationService.builder().notificationDao(DatabaseConfiguration.getInstance(getContext()).notificationDao()).build();
+        taskNotificationManager = TaskNotificationManager.builder().context(getContext()).build();
 
         binding = FragmentTasksBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         appViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
+
+        checkedDialogNotificationItem = getNotificationIndexOnInit();
+        notificationTime = items[checkedDialogNotificationItem];
 
         binding.toolbar.inflateMenu(R.menu.toolbar_menu);
         binding.toolbar.setOnMenuItemClickListener(item -> {
@@ -72,6 +90,9 @@ public class TasksFragment extends Fragment {
                     return true;
                 case R.id.show_outdated:
                     showOutdatedTasks();
+                    return true;
+                case R.id.select_notification_time:
+                    setupNotificationDialog();
                     return true;
                 default:
                     return false;
@@ -115,12 +136,11 @@ public class TasksFragment extends Fragment {
         builder.setTitle("Choose filters");
         List<Category> categoryList = appViewModel.getCategoryList().getValue();
         String[] items = categoryList.stream().map(Category::toString).collect(Collectors.toList()).toArray(new String[0]);
-        builder.setSingleChoiceItems(items, checkedDialogItem, (dialog, which) -> {
-            checkedDialogItem = which;
+        builder.setSingleChoiceItems(items, checkedDialogFilterItem, (dialog, which) -> {
+            checkedDialogFilterItem = which;
             filteringCategory = items[which];
         });
 
-        // add OK and Cancel buttons
         builder.setPositiveButton("OK", (dialog, which) -> {
             List<Task> taskList = taskService.getTaskList();
             appViewModel.setTaskList(categoryService.filterTaskListByCategoryName(taskList, filteringCategory));
@@ -128,12 +148,35 @@ public class TasksFragment extends Fragment {
         });
 
         builder.setNegativeButton("Clear", (dialog, which) -> {
-            checkedDialogItem = -1;
+            checkedDialogFilterItem = -1;
             appViewModel.setTaskList(taskService.getTaskList());
             appViewModel.setFilteringCategory("");
         });
 
-        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void setupNotificationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        builder.setTitle("Choose notification time");
+
+        builder.setSingleChoiceItems(items, checkedDialogNotificationItem, (dialog, which) -> {
+            checkedDialogNotificationItem = which;
+            notificationTime = items[which];
+        });
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            appViewModel.setNotificationTimeInSeconds(getNotificationTimeAsInt());
+            List<Notification> notificationList = notificationService.getNotificationList();
+            notificationList.forEach(notification -> {
+                notification.setNotificationDateTimeEpoch(notification.getExecDateTimeEpoch() - getNotificationTimeAsInt());
+                notificationService.editNotification(notification);
+                taskNotificationManager.cancelTaskNotification(notification);
+                taskNotificationManager.scheduleTaskNotification(notification);
+            });
+        });
+
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -175,5 +218,25 @@ public class TasksFragment extends Fragment {
         });
 
         return taskList;
+    }
+
+    private int getNotificationTimeAsInt() {
+        if ("60 minutes".equals(notificationTime)) {
+            return 60 * 60;
+        } else if ("30 minutes".equals(notificationTime)) {
+            return 30 * 60;
+        } else {
+            return 15 * 60;
+        }
+    }
+
+    private int getNotificationIndexOnInit() {
+        if (appViewModel.getNotificationTimeInSeconds().getValue() == 60 * 60) {
+            return 0;
+        } else if (appViewModel.getNotificationTimeInSeconds().getValue() == 30 * 60) {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 }

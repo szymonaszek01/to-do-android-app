@@ -161,6 +161,7 @@ public class AddTaskFragment extends Fragment {
                 .title(task.getTitle())
                 .message(task.getDesc())
                 .execDateTimeEpoch(task.getExecDateTimeEpoch())
+                .notificationDateTimeEpoch(task.getExecDateTimeEpoch() - appViewModel.getNotificationTimeInSeconds().getValue())
                 .build();
     }
 

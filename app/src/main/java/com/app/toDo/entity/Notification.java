@@ -29,4 +29,7 @@ public class Notification {
 
     @ColumnInfo(name = "exec_date_time_epoch")
     private long execDateTimeEpoch;
+
+    @ColumnInfo(name = "notification_date_time_epoch")
+    private long notificationDateTimeEpoch;
 }

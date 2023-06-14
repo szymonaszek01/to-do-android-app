@@ -17,10 +17,12 @@
     <string name="update_task">Update</string>
     <string name="add_attachment">Attach</string>
     <string name="attachment">Attachment:</string>
-    <string name="add_notify_1h_before">Add notify 1h before</string>
+    <string name="add_notify">Notification</string>
     <string name="created_at">Created at:</string>
     <string name="hide_outdated">Hide outdated</string>
     <string name="show_outdated">Show outdated</string>
     <string name="done">Done</string>
     <string name="delete_task">Delete</string>
+    <string name="select_notification_time">Select notification time</string>
+    <string name="show_filters">Show filters</string>
 </resources>

@@ -43,7 +43,7 @@ public class TaskNotificationManager {
         // Schedule the notification using the notificationId and notification time
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notification.getExecDateTimeEpoch() * 1000, pendingIntent);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notification.getNotificationDateTimeEpoch() * 1000, pendingIntent);
         }
     }
 
@@ -71,7 +71,7 @@ public class TaskNotificationManager {
         // Cancel the scheduled notification using AlarmManager
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, TaskNotificationReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notification.getCounter(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
 
         // Cancel the displayed notification using NotificationManager

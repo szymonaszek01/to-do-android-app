@@ -49,7 +49,7 @@ public class NotificationService {
                 .stream()
                 .filter(notification -> notification.getCounter() == notificationCounter)
                 .findAny()
-                .orElse(Notification.builder().id(0L).counter(countAll() + 1).execDateTimeEpoch(0).title("").message("").build());
+                .orElse(Notification.builder().id(0L).counter(countAll() + 1).execDateTimeEpoch(0).notificationDateTimeEpoch(0).title("").message("").build());
     }
 
     public void addNotification(Notification notification) {

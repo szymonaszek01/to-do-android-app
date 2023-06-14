@@ -22,7 +22,9 @@ public class AppViewModel extends ViewModel {
 
     private final MutableLiveData<List<Category>> categoryList = new MutableLiveData<>(new ArrayList<>());
 
-    private MutableLiveData<String> filteringCategory = new MutableLiveData<>("");
+    private final MutableLiveData<String> filteringCategory = new MutableLiveData<>("");
+
+    private final MutableLiveData<Integer> notificationTimeInSeconds = new MutableLiveData<>(60 * 60);
 
     public LiveData<Task> getSelectedTask() {
         return this.selectedTask;
@@ -54,6 +56,14 @@ public class AppViewModel extends ViewModel {
 
     public void setFilteringCategory(String filteringCategory) {
         this.filteringCategory.setValue(filteringCategory);
+    }
+
+    public LiveData<Integer> getNotificationTimeInSeconds() {
+        return notificationTimeInSeconds;
+    }
+
+    public void setNotificationTimeInSeconds(int notificationTimeInSeconds) {
+        this.notificationTimeInSeconds.setValue(notificationTimeInSeconds);
     }
 
     public Category getDefaultCategory() {

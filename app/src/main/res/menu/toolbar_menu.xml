@@ -4,7 +4,7 @@
     <item
         android:id="@+id/filter_action"
         android:icon="@drawable/ic_baseline_filter_list_24"
-        android:title="Filters"
+        android:title="@string/show_filters"
         app:showAsAction="never"></item>
     <item
         android:id="@+id/hide_outdated"
@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_add_24"
         android:iconTint="#F40000"
         android:title="@string/show_outdated"></item>
+    <item
+        android:id="@+id/select_notification_time"
+        android:icon="@drawable/ic_add_24"
+        android:iconTint="#F40000"
+        android:title="@string/select_notification_time"></item>
 </menu>

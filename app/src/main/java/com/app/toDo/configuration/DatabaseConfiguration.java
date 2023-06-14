@@ -14,7 +14,7 @@ import com.app.toDo.entity.Notification;
 import com.app.toDo.entity.Task;
 import com.app.toDo.util.ConstantUtil;
 
-@Database(entities = {Task.class, Category.class, Notification.class}, exportSchema = false, version = 3)
+@Database(entities = {Task.class, Category.class, Notification.class}, exportSchema = false, version = 4)
 public abstract class DatabaseConfiguration extends RoomDatabase {
 
     private static DatabaseConfiguration databaseConfiguration;

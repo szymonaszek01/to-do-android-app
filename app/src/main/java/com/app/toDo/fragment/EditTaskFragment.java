@@ -221,6 +221,7 @@ public class EditTaskFragment extends Fragment {
                         notificationService.addNotification(notification);
                     } else {
                         notificationService.editNotification(notification);
+                        taskNotificationManager.cancelTaskNotification(notification);
                     }
                     task.setNotificationCounter(notification.getCounter());
                     taskNotificationManager.scheduleTaskNotification(notification);
@@ -269,6 +270,7 @@ public class EditTaskFragment extends Fragment {
         notification.setTitle(task.getTitle());
         notification.setMessage(task.getDesc());
         notification.setExecDateTimeEpoch(task.getExecDateTimeEpoch());
+        notification.setNotificationDateTimeEpoch(task.getExecDateTimeEpoch() - appViewModel.getNotificationTimeInSeconds().getValue());
 
         return notification;
     }
