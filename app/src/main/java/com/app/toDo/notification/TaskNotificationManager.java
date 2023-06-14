@@ -43,7 +43,7 @@ public class TaskNotificationManager {
         // Schedule the notification using the notificationId and notification time
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notification.getExecDateTimeEpoch(), pendingIntent);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notification.getExecDateTimeEpoch() * 1000, pendingIntent);
         }
     }
 

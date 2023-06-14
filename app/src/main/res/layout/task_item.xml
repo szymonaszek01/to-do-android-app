@@ -11,63 +11,80 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:textAlignment="gravity"
+        android:padding="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
-            android:layout_weight="1"
+            android:layout_weight=".60"
             android:orientation="vertical"
             android:textAlignment="gravity">
 
             <TextView
                 android:id="@+id/task_name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:textColor="#D0BCFF"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
                 android:text="@string/task_name"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:textAlignment="gravity"
+                android:gravity="start"
+                android:layout_gravity="start">
+
+                <TextView
+                    android:id="@+id/task_category"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".25"
+                    android:text="@string/category"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <Space
+                    android:layout_width="10sp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/task_datetime"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".75"
+                    android:gravity="start"
+                    android:text="@string/datetime"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="5sp" />
 
             <TextView
                 android:id="@+id/task_desc"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="@string/desc_field"
+                android:textColor="#D0BCFF"
                 android:textSize="12sp" />
-
-
-            <TextView
-                android:id="@+id/task_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/category"
-                android:textSize="11sp" />
-
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/task_datetime"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:text="@string/datetime"
-            android:textAlignment="gravity"
-            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/is_attached"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_weight=".10"
             android:scaleX="0.90"
             android:scaleY="0.90"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -75,10 +92,13 @@
 
         <Button
             android:id="@+id/edit_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight=".30"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:gravity="center"
             android:text="@string/edit"
+            android:textColor="@color/white"
             android:textAlignment="center"
             android:textSize="12sp" />
 
