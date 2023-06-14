@@ -21,4 +21,6 @@
     <string name="created_at">Created at:</string>
     <string name="hide_outdated">Hide outdated</string>
     <string name="show_outdated">Show outdated</string>
+    <string name="done">Done</string>
+    <string name="delete_task">Delete</string>
 </resources>

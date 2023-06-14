@@ -1,17 +1,12 @@
 package com.app.toDo.fragment;
 
 import android.app.AlertDialog;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toolbar;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -29,6 +24,7 @@ import com.app.toDo.service.TaskService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,23 +69,19 @@ public class TasksFragment extends Fragment {
                     return true;
                 case R.id.hide_outdated:
                     hideOutdatedTasks();
-                    binding.toolbar.getMenu().findItem(item.getItemId()).setVisible(false);
-                    binding.toolbar.getMenu().findItem(item.getItemId() + 1).setVisible(true);
                     return true;
                 case R.id.show_outdated:
                     showOutdatedTasks();
-                    binding.toolbar.getMenu().findItem(item.getItemId()).setVisible(false);
-                    binding.toolbar.getMenu().findItem(item.getItemId() - 1).setVisible(true);
                     return true;
                 default:
                     return false;
             }
         });
 
-        List<Task> taskList = taskService.getTaskList();
+        List<Task> taskList = sortByExecDateTimeEpochDescending(taskService.getTaskList());
         List<Category> categoryList = categoryService.getCategoryList();
         appViewModel.setCategoryList(categoryList);
-        appViewModel.setTaskList(taskService.getTaskList());
+        appViewModel.setTaskList(taskList);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         binding.tasksRv.setLayoutManager(layoutManager);
@@ -114,7 +106,7 @@ public class TasksFragment extends Fragment {
     private void observeAppViewModel() {
         Log.i("VM", "data changed");
         appViewModel.getTaskList().observe(getViewLifecycleOwner(), tasks -> {
-            adapter.setNewTasks(tasks);
+            adapter.setNewTasks(sortByExecDateTimeEpochDescending(tasks));
         });
     }
 
@@ -127,17 +119,20 @@ public class TasksFragment extends Fragment {
             checkedDialogItem = which;
             filteringCategory = items[which];
         });
+
         // add OK and Cancel buttons
         builder.setPositiveButton("OK", (dialog, which) -> {
             List<Task> taskList = taskService.getTaskList();
             appViewModel.setTaskList(categoryService.filterTaskListByCategoryName(taskList, filteringCategory));
             appViewModel.setFilteringCategory(filteringCategory);
         });
+
         builder.setNegativeButton("Clear", (dialog, which) -> {
             checkedDialogItem = -1;
             appViewModel.setTaskList(taskService.getTaskList());
             appViewModel.setFilteringCategory("");
         });
+
         // create and show the alert dialog
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -149,12 +144,36 @@ public class TasksFragment extends Fragment {
                 .stream()
                 .filter(task -> task.getExecDateTimeEpoch() > LocalDateTime.now().toEpochSecond(zoneOffset))
                 .collect(Collectors.toList());
-        appViewModel.setTaskList(taskList);
+        appViewModel.setTaskList(sortByExecDateTimeEpochDescending(taskList));
     }
 
     private void showOutdatedTasks() {
         List<Task> taskList = taskService.getTaskList();
         String filter = appViewModel.getFilteringCategory().getValue();
-        appViewModel.setTaskList(categoryService.filterTaskListByCategoryName(taskList, filter));
+        appViewModel.setTaskList(sortByExecDateTimeEpochDescending(categoryService.filterTaskListByCategoryName(taskList, filter)));
+    }
+
+    private List<Task> sortByExecDateTimeEpochDescending(List<Task> taskList) {
+        taskList.sort(new Comparator<Task>() {
+            @Override
+            public int compare(Task task1, Task task2) {
+                ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
+                long currentTime = LocalDateTime.now().toEpochSecond(zoneOffset);
+                long timeDifference1 = Math.abs(currentTime - task1.getExecDateTimeEpoch());
+                long timeDifference2 = Math.abs(currentTime - task2.getExecDateTimeEpoch());
+
+                if (currentTime > task1.getExecDateTimeEpoch() && currentTime > task2.getExecDateTimeEpoch()) {
+                    return 0; // Both tasks are outdated, consider them equal
+                } else if (currentTime > task1.getExecDateTimeEpoch()) {
+                    return 1; // Only task1 is outdated, place it after task2
+                } else if (currentTime > task2.getExecDateTimeEpoch()) {
+                    return -1; // Only task2 is outdated, place it after task1
+                } else {
+                    return Long.compare(timeDifference1, timeDifference2);
+                }
+            }
+        });
+
+        return taskList;
     }
 }

@@ -1,6 +1,8 @@
 package com.app.toDo.fragment;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,16 +45,11 @@ import java.time.ZoneOffset;
 
 public class EditTaskFragment extends Fragment {
 
-    private TaskService taskService;
-
-    private CategoryService categoryService;
-
-    private NotificationService notificationService;
-
-    private TaskNotificationManager taskNotificationManager;
-
     private final ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
-
+    private TaskService taskService;
+    private CategoryService categoryService;
+    private NotificationService notificationService;
+    private TaskNotificationManager taskNotificationManager;
     private int selectedCategoryIndex = 0;
 
     private Task task;
@@ -121,7 +118,9 @@ public class EditTaskFragment extends Fragment {
         observeAppViewModel();
         addCategoryBtnInit();
         dateTimePickInit();
+        deleteTaskBtnInit();
         updateTaskBtnInit();
+
         return root;
     }
 
@@ -145,6 +144,7 @@ public class EditTaskFragment extends Fragment {
         }
         task.setUri(binding.link.getText().toString());
         task.setNotificationOn(binding.addNotifyCheckbox.isChecked());
+        task.setDone(binding.doneCheckbox.isChecked());
     }
 
     private void updateTaskFieldList() {
@@ -155,6 +155,7 @@ public class EditTaskFragment extends Fragment {
         binding.createdAt.setText(DateConverter.getPrettyLocalDateTime(task.getCreationDateTimeEpoch()));
         binding.link.setText(task.getUri());
         binding.addNotifyCheckbox.setChecked(task.isNotificationOn());
+        binding.doneCheckbox.setChecked(task.isDone());
         binding.categorySelectView.setText(categoryService.getCategoryNameById(task.getCategoryId()));
 
         binding.categorySelectView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -232,6 +233,33 @@ public class EditTaskFragment extends Fragment {
                 taskService.editTask(task);
                 appViewModel.setSelectedTask(appViewModel.getDefaultTask());
                 Navigation.findNavController(view).navigate(R.id.action_editTaskFragment_to_tasksFragment);
+            }
+        });
+    }
+
+    private void deleteTaskBtnInit() {
+        binding.deleteTaskButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Are you sure you want to delete \"" + task.getTitle() + "\" task?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (task.isNotificationOn()) {
+                            Notification notification = notificationService.getNotificationByCounter(task.getNotificationCounter());
+                            notificationService.deleteNotification(notification);
+                            taskNotificationManager.cancelTaskNotification(notification);
+                        }
+
+                        taskService.deleteTask(task);
+                        appViewModel.setSelectedTask(appViewModel.getDefaultTask());
+                        Navigation.findNavController(view).navigate(R.id.action_editTaskFragment_to_tasksFragment);
+                        Toast.makeText(getContext(), "Task \"" + task.getTitle() + "\" removed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("No", null);
+                builder.show();
             }
         });
     }

@@ -55,8 +55,13 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ViewHolder> {
             action.setTaskIdToEdit(tasks.get(position).getId());
             Navigation.findNavController(context).navigate(action);
         });
-        if (tasks.get(position).getUri() != null) {
+        if (tasks.get(position).getUri() != null && tasks.get(position).getUri().length() > 0) {
             viewHolder.getIsAttached().setImageResource(R.drawable.ic_baseline_attach_file_24);
+        }
+        if (!tasks.get(position).isDone()) {
+            viewHolder.getIsDone().setImageResource(R.drawable.ic_hourglass_top_24);
+        } else {
+            viewHolder.getIsDone().setImageResource(R.drawable.ic_finished_24);
         }
     }
 
@@ -88,6 +93,8 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ViewHolder> {
 
         private final ImageView isAttached;
 
+        private final ImageView isDone;
+
         public ViewHolder(View view) {
             super(view);
 
@@ -97,6 +104,7 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ViewHolder> {
             taskDateTime = view.findViewById(R.id.task_datetime);
             editTaskButton = view.findViewById(R.id.edit_button);
             isAttached = view.findViewById(R.id.is_attached);
+            isDone = view.findViewById(R.id.is_done);
         }
 
         public TextView getTaskName() {
@@ -119,9 +127,8 @@ public class RvAdapter extends RecyclerView.Adapter<RvAdapter.ViewHolder> {
             return editTaskButton;
         }
 
-        public ImageView getIsAttached() {
-            return isAttached;
-        }
+        public ImageView getIsAttached() {return isAttached;}
 
+        public ImageView getIsDone() {return isDone;}
     }
 }

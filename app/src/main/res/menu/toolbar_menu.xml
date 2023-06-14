@@ -15,6 +15,5 @@
         android:id="@+id/show_outdated"
         android:icon="@drawable/ic_add_24"
         android:iconTint="#F40000"
-        android:title="@string/show_outdated"
-        android:visible="false"></item>
+        android:title="@string/show_outdated"></item>
 </menu>

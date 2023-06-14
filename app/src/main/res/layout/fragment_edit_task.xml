@@ -91,10 +91,15 @@
                 android:id="@+id/add_notify_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:clickable="false"
+                android:checked="false"
                 android:text="@string/add_notify_1h_before" />
 
+            <CheckBox
+                android:id="@+id/done_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/done" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -165,6 +170,19 @@
                     android:layout_weight="1"
                     android:text="@string/add_category"
                     android:textAlignment="gravity" />
+
+                <Button
+                    android:id="@+id/delete_task_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/delete_task"
+                    android:textAlignment="gravity" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="100" />
 
                 <Button
                     android:id="@+id/create_task_button"
