@@ -35,6 +35,7 @@ import com.app.toDo.service.CategoryService;
 import com.app.toDo.service.NotificationService;
 import com.app.toDo.service.TaskService;
 import com.app.toDo.util.DateConverter;
+import com.app.toDo.util.FileCopyClass;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
@@ -147,6 +148,7 @@ public class AddTaskFragment extends Fragment {
                     taskNotificationManager.scheduleTaskNotification(notification);
                 }
 
+                task.setUri(FileCopyClass.builder().context(getContext()).build().copyAttachmentToExternal(imageUri).toString());
                 taskService.addTask(task);
                 appViewModel.setSelectedTask(appViewModel.getDefaultTask());
                 Navigation.findNavController(view).navigate(R.id.action_addTaskFragment_to_tasksFragment);

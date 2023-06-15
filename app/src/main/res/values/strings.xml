@@ -25,4 +25,5 @@
     <string name="delete_task">Delete</string>
     <string name="select_notification_time">Select notification time</string>
     <string name="show_filters">Show filters</string>
+    <string name="find_task">Find task</string>
 </resources>

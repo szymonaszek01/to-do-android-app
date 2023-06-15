@@ -28,6 +28,8 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/task_name_view"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -47,6 +49,8 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/task_desc_view"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:maxLength="300"

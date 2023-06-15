@@ -76,7 +76,7 @@ public class AddCategoryFragment extends Fragment {
         boolean isOk = true;
         if (binding.categoryNameView.getText().length() < 2) {
             isOk = false;
-            binding.categoryNameView.setError("Atleast 2 signs please!");
+            binding.categoryNameView.setError("At least 2 signs please!");
         }
         return isOk;
     }

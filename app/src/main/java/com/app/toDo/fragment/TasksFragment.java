@@ -2,10 +2,15 @@ package com.app.toDo.fragment;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,29 +38,18 @@ import java.util.stream.Collectors;
 
 public class TasksFragment extends Fragment {
 
-    int checkedDialogFilterItem = -1;
-
-    int checkedDialogNotificationItem = 0;
-
-    private TaskService taskService;
-
-    private CategoryService categoryService;
-
-    private NotificationService notificationService;
-
-    private TaskNotificationManager taskNotificationManager;
-
-    private String filteringCategory;
-
-    private String notificationTime;
-
-    private FragmentTasksBinding binding;
-
-    private AppViewModel appViewModel;
-
-    private RvAdapter adapter;
-
     private final String[] items = {"60 minutes", "30 minutes", "15 minutes"};
+    int checkedDialogFilterItem = -1;
+    int checkedDialogNotificationItem = 0;
+    private TaskService taskService;
+    private CategoryService categoryService;
+    private NotificationService notificationService;
+    private TaskNotificationManager taskNotificationManager;
+    private String filteringCategory;
+    private String notificationTime;
+    private FragmentTasksBinding binding;
+    private AppViewModel appViewModel;
+    private RvAdapter adapter;
 
     public TasksFragment() {
     }
@@ -110,6 +104,7 @@ public class TasksFragment extends Fragment {
         binding.tasksRv.setAdapter(adapter);
 
         addTaskBtnInit(root);
+        findTaskBtnInit(root);
         observeAppViewModel();
 
         return root;
@@ -124,10 +119,32 @@ public class TasksFragment extends Fragment {
         });
     }
 
+    private void findTaskBtnInit(View root) {
+        binding.findTask.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<Task> taskList = taskService.getTaskList()
+                        .stream()
+                        .filter(task -> task.getTitle().contains(s.toString()))
+                        .collect(Collectors.toList());
+                appViewModel.setTaskList(taskList);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
     private void observeAppViewModel() {
         Log.i("VM", "data changed");
         appViewModel.getTaskList().observe(getViewLifecycleOwner(), tasks -> {
             adapter.setNewTasks(sortByExecDateTimeEpochDescending(tasks));
+            binding.tasksRv.setAdapter(adapter);
         });
     }
 
@@ -166,9 +183,14 @@ public class TasksFragment extends Fragment {
             notificationTime = items[which];
         });
 
+        ZoneOffset zoneOffset = ZoneOffset.systemDefault().getRules().getOffset(LocalDateTime.now());
         builder.setPositiveButton("OK", (dialog, which) -> {
             appViewModel.setNotificationTimeInSeconds(getNotificationTimeAsInt());
-            List<Notification> notificationList = notificationService.getNotificationList();
+            List<Notification> notificationList = notificationService.getNotificationList()
+                    .stream()
+                    .filter(notification -> notification.getExecDateTimeEpoch() > LocalDateTime.now().toEpochSecond(zoneOffset))
+                    .collect(Collectors.toList());
+
             notificationList.forEach(notification -> {
                 notification.setNotificationDateTimeEpoch(notification.getExecDateTimeEpoch() - getNotificationTimeAsInt());
                 notificationService.editNotification(notification);

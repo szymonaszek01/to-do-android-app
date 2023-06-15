@@ -32,6 +32,26 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/find_task_layout"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25sp"
+            android:layout_marginBottom="20sp"
+            android:hint="@string/find_task">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/find_task"
+                android:inputType="text"
+                android:imeOptions="actionDone"
+                android:layout_width="match_parent"
+                android:layout_height="60sp"
+                android:layout_marginLeft="20sp"
+                android:layout_marginRight="20sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tasks_rv"
             android:layout_width="match_parent"
