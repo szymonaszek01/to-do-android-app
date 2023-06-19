@@ -137,6 +137,10 @@ public class EditTaskFragment extends Fragment {
 
 
     private void updateTask() {
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra("taskId")) {
+            intent.removeExtra("taskId");
+        }
         task.setTitle(binding.taskNameView.getText().toString());
         task.setDesc(binding.taskDescView.getText().toString());
         if (selectedCategoryIndex != 0) {

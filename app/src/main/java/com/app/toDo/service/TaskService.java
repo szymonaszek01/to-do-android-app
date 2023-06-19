@@ -47,6 +47,13 @@ public class TaskService {
                 .findFirst();
     }
 
+    public Optional<Task> getTaskByTitle(String title) {
+        return getTaskList()
+                .stream()
+                .filter(task -> task.getTitle().equals(title))
+                .findFirst();
+    }
+
     public void addTask(Task task) {
         executorService.execute(() -> taskDao.insertTask(task));
     }

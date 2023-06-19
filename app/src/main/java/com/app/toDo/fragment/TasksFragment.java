@@ -1,17 +1,17 @@
 package com.app.toDo.fragment;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TasksFragment extends Fragment {
@@ -108,6 +109,27 @@ public class TasksFragment extends Fragment {
         observeAppViewModel();
 
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra("taskId")) {
+            long taskId = intent.getLongExtra("taskId", -1);
+            if (taskId != -1) {
+                Optional<Task> task = taskService.getTaskById(taskId);
+                if (!task.isPresent()) {
+                    return;
+                }
+                Notification notification = notificationService.getNotificationByCounter(task.get().getNotificationCounter());
+                notificationService.deleteNotification(notification);
+                taskNotificationManager.cancelTaskNotification(notification);
+                com.app.toDo.fragment.TasksFragmentDirections.ActionEditTaskAction action = TasksFragmentDirections.actionEditTaskAction();
+                action.setTaskIdToEdit(taskId);
+                Navigation.findNavController(view).navigate(action);
+            }
+        }
     }
 
     private void addTaskBtnInit(View root) {

@@ -20,8 +20,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.app.toDo.MainActivity;
 import com.app.toDo.R;
+import com.app.toDo.configuration.DatabaseConfiguration;
 import com.app.toDo.entity.Notification;
+import com.app.toDo.entity.Task;
+import com.app.toDo.service.TaskService;
+
+import java.util.Optional;
 
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -48,14 +54,24 @@ public class TaskNotificationManager {
     }
 
     public void sendTaskNotification(int notificationId, String title, String message) {
+        TaskService taskService = TaskService.builder().taskDao(DatabaseConfiguration.getInstance(context).taskDao()).build();
+        Optional<Task> task = taskService.getTaskByTitle(title);
+        if (!task.isPresent()) {
+            return;
+        }
+
         createNotificationChannel();
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("taskId", task.get().getId());
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_add_24)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent);
 
         // Set the notification sound
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
