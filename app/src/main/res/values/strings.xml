@@ -6,6 +6,7 @@
     <string name="desc_field">Add description</string>
     <string name="add_task">Add Task</string>
     <string name="add_category">Add category</string>
+    <string name="delete_category">Delete category</string>
     <string name="select_category">Select category</string>
     <string name="your_categories">Your categories</string>
     <string name="type_new_cat">Type new category name</string>

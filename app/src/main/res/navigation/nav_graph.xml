@@ -38,6 +38,9 @@
         <action
             android:id="@+id/action_addCategoryFragment_to_addTaskFragment2"
             app:destination="@id/addTaskFragment" />
+        <action
+            android:id="@+id/action_addCategoryFragment_to_editTaskFragment"
+            app:destination="@id/editTaskFragment" />
     </fragment>
     <fragment
         android:id="@+id/editTaskFragment"

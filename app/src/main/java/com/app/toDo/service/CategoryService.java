@@ -6,6 +6,7 @@ import com.app.toDo.entity.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,6 +49,13 @@ public class CategoryService {
                 .findFirst()
                 .map(Category::getName)
                 .orElse("");
+    }
+
+    public Optional<Category> getCategoryByTitle(String title) {
+        return getCategoryList()
+                .stream()
+                .filter(category -> category.getName().equals(title))
+                .findFirst();
     }
 
     public void addCategory(Category category) {

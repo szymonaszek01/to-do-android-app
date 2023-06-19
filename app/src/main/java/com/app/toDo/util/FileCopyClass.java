@@ -21,16 +21,12 @@ public class FileCopyClass {
     private final Context context;
 
     public Uri copyAttachmentToExternal(Uri attachmentUri) {
-        String path;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-            path = context.getExternalFilesDir(Environment.DIRECTORY_DCIM).toString() + "/todo";
-        } else {
-            path = Environment.getExternalStorageDirectory().toString() + "/todo";
-        }
+        String path = context.getExternalFilesDir(Environment.DIRECTORY_DCIM).toString() + "/todo";
         File directory = new File(path);
         if (!directory.exists()) {
             directory.mkdir();
         }
+
         File file = new File(path + "/" + attachmentUri.getLastPathSegment());
         try {
             InputStream inputStream = context.getContentResolver().openInputStream(attachmentUri);
@@ -38,6 +34,7 @@ public class FileCopyClass {
         } catch (IOException e) {
             Log.e("file", e.getMessage());
         }
+
         return Uri.fromFile(file);
     }
 
